@@ -12,7 +12,6 @@ model_path = hf_hub_download(
 model = tf.keras.models.load_model(model_path)
 #Tensorflow Model Prediction
 def model_prediction(test_image):
-    model = tf.keras.models.load_model('trained_model.keras')
     image = tf.keras.preprocessing.image.load_img(test_image,target_size=(128,128))
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr]) #Convert single image to a batch 
@@ -115,4 +114,5 @@ elif(app_mode=="Disease Recognition"):
  'Tomato___Tomato_mosaic_virus',
  'Tomato___healthy']
         st.success(format(class_name[result_index]))
+
 
