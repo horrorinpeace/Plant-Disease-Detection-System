@@ -5,4 +5,5 @@ matplotlib==3.7.2
 seaborn==0.13.0
 pandas==2.1.0
 streamlit==1.51.0
+huggingface_hub
 librosa==0.10.1
