@@ -1,7 +1,15 @@
 import streamlit as st 
 import tensorflow as tf
 import numpy as np
-
+from huggingface_hub import hf_hub_download
+from PIL import Image 
+#Download the model from Hugging Face
+model_path = hf_hub_download(
+    repo_id="qwertymaninwork/Plant_Disease_Detection_System",  # your repo name
+    filename="trained_model.keras"  # <-- change to your actual model file name
+)
+#Load the TensorFlow model
+model = tf.keras.models.load_model(model_path)
 #Tensorflow Model Prediction
 def model_prediction(test_image):
     model = tf.keras.models.load_model('trained_model.keras')
