@@ -65,6 +65,7 @@ elif(app_mode=="About"):
 
 #Prediction Page
 elif(app_mode=="Disease Recognition"):
+    input_arr = input_arr / 255.0
     st.header("Disease Recognition")
     test_image = st.file_uploader("Choose an image:")
     if(st.button("Show Image")):
@@ -114,5 +115,6 @@ elif(app_mode=="Disease Recognition"):
  'Tomato___Tomato_mosaic_virus',
  'Tomato___healthy']
         st.success(format(class_name[result_index]))
+
 
 
