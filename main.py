@@ -11,7 +11,7 @@ st.set_page_config(page_title="Plant Disease Detection", layout="wide")
 # --------------------------------------------------------
 model_path = hf_hub_download(
     repo_id="qwertymaninwork/Plant_Disease_Detection_System",  # your Hugging Face repo ID
-    filename="fixed_finetuned_model.keras"  # make sure this is the exact filename uploaded
+    filename="portable_finetuned_model.keras"  # make sure this is the exact filename uploaded
 )
 
 # --------------------------------------------------------
@@ -102,4 +102,5 @@ elif app_mode == "Disease Recognition":
                 'Tomato___Tomato_mosaic_virus', 'Tomato___healthy'
             ]
             st.success(f"Prediction: {class_names[index]}")
+
 
