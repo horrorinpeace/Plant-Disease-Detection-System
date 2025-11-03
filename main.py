@@ -6,7 +6,7 @@ from PIL import Image
 #Download the model from Hugging Face
 model_path = hf_hub_download(
     repo_id="qwertymaninwork/Plant_Disease_Detection_System",  # your repo name
-    filename="finetuned_model.keras"  # <-- change to your actual model file name
+    filename="trained_model.keras"  # <-- change to your actual model file name
 )
 #Load the TensorFlow model
 model = tf.keras.models.load_model(model_path)
@@ -114,6 +114,7 @@ elif(app_mode=="Disease Recognition"):
  'Tomato___Tomato_mosaic_virus',
  'Tomato___healthy']
         st.success(format(class_name[result_index]))
+
 
 
 
