@@ -10,7 +10,7 @@ import time
 # Download the model from Hugging Face
 model_path = hf_hub_download(
     repo_id="qwertymaninwork/Plant_Disease_Detection_System",
-    filename="trained_model.keras"
+    filename="finetuned_model.keras"
 )
 
 # Load the TensorFlow model
@@ -107,3 +107,4 @@ elif app_mode == "Capture Image":
                     'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
                     'Tomato___healthy']
                 st.success(f"Detected Disease: {class_name[result_index]}")
+
