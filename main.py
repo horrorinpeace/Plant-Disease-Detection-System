@@ -23,7 +23,7 @@ except ImportError:
 # Download model
 model_path = hf_hub_download(
     repo_id="qwertymaninwork/Plant_Disease_Detection_System",
-    filename="finetuned_model.keras"
+    filename="trained_model.keras"
 )
 
 model = tf.keras.models.load_model(model_path)
@@ -126,3 +126,4 @@ elif app_mode == "Capture Image":
             with st.spinner("Processing..."):
                 result_index = model_prediction("captured.jpg")
                 st.success(f"🌿 Detected Disease: {class_name[result_index]}")
+
