@@ -3,9 +3,10 @@ import tensorflow as tf
 import numpy as np
 from huggingface_hub import hf_hub_download
 from PIL import Image
-from picamera2 import Picamera2
 import cv2
+import os
 import time
+import subprocess
 
 # Download the model from Hugging Face
 model_path = hf_hub_download(
@@ -35,7 +36,7 @@ if app_mode == "Home":
     image_path = "home_page.jpg"
     st.image(image_path, use_container_width=True)
     st.markdown("""
-    Welcome to the Plant Disease Recognition System! 🌿🔍
+    Welcome to the Plant Disease Recognition System! 🌿🔍  
     Upload an image or capture one directly from your Raspberry Pi camera to detect plant diseases.
     """)
 
@@ -75,36 +76,35 @@ elif app_mode == "Capture Image":
     st.header("📸 Capture Image using Raspberry Pi Camera")
     
     if st.button("Open Camera and Capture"):
-        st.info("Starting camera... please wait 2–3 seconds")
-        picam2 = Picamera2()
-        config = picam2.create_still_configuration(main={"size": (640, 480)})
-        picam2.configure(config)
-        picam2.start()
-        time.sleep(2)  # Allow camera to warm up
-        frame = picam2.capture_array()
-        picam2.close()
+        st.info("Opening Raspberry Pi Camera... please wait 2–3 seconds")
+        
+        # File path for captured image
+        image_path = "captured.jpg"
+        
+        # Capture image using rpicam-still (replaces picamera2)
+        try:
+            subprocess.run(["rpicam-still", "-o", image_path, "-t", "2000"], check=True)
+            st.success("✅ Image captured successfully!")
+            
+            captured_image = Image.open(image_path)
+            st.image(captured_image, caption="Captured Image", use_container_width=True)
 
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        captured_image = Image.fromarray(img)
-        st.image(captured_image, caption="Captured Image", use_container_width=True)
-
-        # Save and Predict
-        captured_image.save("captured.jpg")
-        if st.button("Detect Disease"):
-            with st.spinner("Processing..."):
-                result_index = model_prediction("captured.jpg")
-                class_name = ['Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust',
-                    'Apple___healthy', 'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
-                    'Cherry_(including_sour)___healthy', 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
-                    'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
-                    'Grape___Black_rot', 'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
-                    'Grape___healthy', 'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
-                    'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight',
-                    'Potato___Late_blight', 'Potato___healthy', 'Raspberry___healthy', 'Soybean___healthy',
-                    'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
-                    'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
-                    'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
-                    'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
-                    'Tomato___healthy']
-                st.success(f"Detected Disease: {class_name[result_index]}")
-
+            if st.button("Detect Disease"):
+                with st.spinner("Processing..."):
+                    result_index = model_prediction(image_path)
+                    class_name = ['Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust',
+                        'Apple___healthy', 'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
+                        'Cherry_(including_sour)___healthy', 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
+                        'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
+                        'Grape___Black_rot', 'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
+                        'Grape___healthy', 'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
+                        'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight',
+                        'Potato___Late_blight', 'Potato___healthy', 'Raspberry___healthy', 'Soybean___healthy',
+                        'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
+                        'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
+                        'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
+                        'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
+                        'Tomato___healthy']
+                    st.success(f"Detected Disease: {class_name[result_index]}")
+        except subprocess.CalledProcessError:
+            st.error("❌ Failed to capture image. Make sure the camera is connected and enabled.")
