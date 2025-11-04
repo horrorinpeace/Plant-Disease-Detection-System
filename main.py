@@ -41,7 +41,7 @@ model = load_model()
 def model_prediction(test_image):
     try:
         image = Image.open(test_image)
-        image = image.resize((128, 128))  # Changed to 128x128 (check your model's input size)
+        image = image.resize((28, 28))  # Changed to 128x128 (check your model's input size)
         input_arr = tf.keras.preprocessing.image.img_to_array(image)
         input_arr = np.expand_dims(input_arr, axis=0)
         input_arr = input_arr / 255.0  # Normalize
@@ -196,3 +196,4 @@ elif app_mode == "Disease Recognition":
         - Avoid blurry or dark images
         - Ensure the leaf fills most of the frame
         """)
+
