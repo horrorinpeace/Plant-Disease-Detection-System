@@ -6,8 +6,8 @@ from PIL import Image
 
 # Download MobileNetV2 model from Hugging Face
 model_path = hf_hub_download(
-    repo_id="linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification",  # MobileNetV2 plant disease repo
-    filename="mobilenet_v2_1.0_224.h5"  # Model file inside repo
+    repo_id="qwertymaninwork/Plant_Disease_Detection_System",  # MobileNetV2 plant disease repo
+    filename="model.h5"  # Model file inside repo
 )
 
 # Load the MobileNetV2 model
@@ -75,6 +75,7 @@ elif app_mode == "Disease Recognition":
             ]
             
             st.success(f"✅ Detected Disease: {class_name[result_index]}")
+
 
 
 
