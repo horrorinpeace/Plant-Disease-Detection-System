@@ -9,7 +9,7 @@ model_path = hf_hub_download(
     filename="plant_disease_recog_model_pwp.keras"  # <-- change to your actual model file name
 )
 #Load the TensorFlow model
-model = tf.keras.models.load_model(plant_disease_recog_model_pwp.keras)
+model = tf.keras.models.load_model(model_path)
 #Tensorflow Model Prediction
 def model_prediction(test_image):
     image = tf.keras.preprocessing.image.load_img(test_image,target_size=(128,128))
@@ -116,6 +116,7 @@ elif(app_mode=="Disease Recognition"):
  'Tomato___healthy']
 
         st.success(format(class_name[result_index]))
+
 
 
 
