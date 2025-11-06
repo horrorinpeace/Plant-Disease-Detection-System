@@ -15,7 +15,7 @@ model_path = hf_hub_download(
 # ------------------------------
 # Rebuild MobileNetV2 architecture
 # ------------------------------
-NUM_CLASSES = 30  # total number of folders/classes in your dataset
+NUM_CLASSES = 26  # total number of folders/classes in your dataset
 
 base_model = tf.keras.applications.MobileNetV2(
     input_shape=(128, 128, 3),
@@ -136,5 +136,6 @@ elif app_mode == "Disease Recognition":
             ]
 
             st.success(f"**Detected:** {class_name[result_index]} ({confidence:.2f}% confidence)")
+
 
 
