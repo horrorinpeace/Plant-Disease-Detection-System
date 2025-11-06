@@ -13,18 +13,8 @@ model_path = hf_hub_download(
 )
 
 # ------------------------------
-# Rebuild MobileNetV2 architecture
-# ------------------------------
-NUM_CLASSES = 26  # total number of folders/classes in your dataset
+model = tf.keras.models.load_model(model_path, compile=False, safe_mode=False)
 
-base_model = tf.keras.applications.MobileNetV2(
-    input_shape=(128, 128, 3),
-    include_top=False,
-    weights=None
-)
-x = tf.keras.layers.GlobalAveragePooling2D()(base_model.output)
-output = tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')(x)
-model = tf.keras.Model(inputs=base_model.input, outputs=output)
 
 # ------------------------------
 # Load saved weights
@@ -136,6 +126,7 @@ elif app_mode == "Disease Recognition":
             ]
 
             st.success(f"**Detected:** {class_name[result_index]} ({confidence:.2f}% confidence)")
+
 
 
 
