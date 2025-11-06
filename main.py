@@ -3,117 +3,138 @@ import tensorflow as tf
 import numpy as np
 from huggingface_hub import hf_hub_download
 from PIL import Image 
-#Download the model from Hugging Face
+
+# ------------------------------
+# Download model weights
+# ------------------------------
 model_path = hf_hub_download(
     repo_id="qwertymaninwork/Plant_Disease_Detection_System",  # your repo name
-    filename="mobilenetv2_plant.keras"  # <-- change to your actual model file name
+    filename="mobilenetv2_plant.keras"  # your actual model file name
 )
-#Load the TensorFlow model
-model = tf.keras.models.load_model(model_path, compile=False, safe_mode=False)
-#Tensorflow Model Prediction
-def model_prediction(test_image):
-    image = tf.keras.preprocessing.image.load_img(test_image,target_size=(128,128))
-    input_arr = tf.keras.preprocessing.image.img_to_array(image)
-    input_arr = np.array([input_arr]) #Convert single image to a batch 
-    prediction= model.predict(input_arr)
-    result_index = np.argmax(prediction)
-    return result_index
 
-#Sidebar
+# ------------------------------
+# Rebuild MobileNetV2 architecture
+# ------------------------------
+NUM_CLASSES = 30  # total number of folders/classes in your dataset
+
+base_model = tf.keras.applications.MobileNetV2(
+    input_shape=(128, 128, 3),
+    include_top=False,
+    weights=None
+)
+x = tf.keras.layers.GlobalAveragePooling2D()(base_model.output)
+output = tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')(x)
+model = tf.keras.Model(inputs=base_model.input, outputs=output)
+
+# ------------------------------
+# Load saved weights
+# ------------------------------
+model.load_weights(model_path)
+
+# ------------------------------
+# TensorFlow Model Prediction
+# ------------------------------
+def model_prediction(test_image):
+    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128,128))
+    input_arr = tf.keras.preprocessing.image.img_to_array(image)
+    input_arr = np.expand_dims(input_arr, axis=0) / 255.0  # normalize
+    prediction = model.predict(input_arr)
+    result_index = np.argmax(prediction)
+    confidence = np.max(prediction) * 100
+    return result_index, confidence
+
+# ------------------------------
+# Sidebar Navigation
+# ------------------------------
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page",("Home","About","Disease Recognition"))
 
-#Home Page
-if(app_mode=="Home"):
+# ------------------------------
+# Home Page
+# ------------------------------
+if app_mode == "Home":
     st.header("PLANT DISEASE RECOGNITION SYSTEM")
     image_path = "home_page.jpg"
-    st.image(image_path,use_container_width=True)
+    st.image(image_path, use_container_width=True)
     st.markdown("""
-    Welcome to the Plant Disease Recognition System! 🌿🔍
+    Welcome to the **Plant Disease Recognition System!** 🌿🔍
     
-    Our mission is to help in identifying plant diseases efficiently. Upload an image of a plant, and our system will analyze it to detect any signs of diseases. Together, let's protect our crops and ensure a healthier harvest!
+    Upload a leaf image, and our model will detect plant diseases using AI.
 
-    ### How It Works
-    1. *Upload Image:* Go to the *Disease Recognition* page and upload an image of a plant with suspected diseases.
-    2. *Analysis:* Our system will process the image using advanced algorithms to identify potential diseases.
-    3. *Results:* View the results and recommendations for further action.
-
-    ### Why Choose Us?
-    - *Accuracy:* Our system utilizes state-of-the-art machine learning techniques for accurate disease detection.
-    - *User-Friendly:* Simple and intuitive interface for seamless user experience.
-    - *Fast and Efficient:* Receive results in seconds, allowing for quick decision-making.
-
-    ### Get Started
-    Click on the *Disease Recognition* page in the sidebar to upload an image and experience the power of our Plant Disease Recognition System!
-
-    ### About Us
-    Learn more about the project, our team, and our goals on the *About* page.
+    **How It Works:**
+    1. Go to the *Disease Recognition* page.
+    2. Upload your plant image.
+    3. View instant disease detection results.
     """)
 
-#About Page
-elif(app_mode=="About"):
+# ------------------------------
+# About Page
+# ------------------------------
+elif app_mode == "About":
     st.header("About")
     st.markdown("""
     ### About Dataset
-    This dataset is recreated using offline augmentation from the original dataset. The original dataset can be found on this github repo. This dataset consists of about 87K rgb images of healthy and diseased crop leaves which is categorized into 38 different classes. The total dataset is divided into 80/20 ratio of training and validation set preserving the directory structure. A new directory containing 33 test images is created later for prediction purpose.
-    ### Content
-    1. Train (70295 images)
-    2. Valid (17572 images)
-    3. Test (33 images)
+    This dataset contains healthy and diseased leaf images for:
+    - Rice 🌾
+    - Wheat 🌾
+    - Millet 🌿
+    - Sugarcane 🍃
+    - Tea 🍵
+    - Tomato 🍅
+    - Potato 🥔
+
+    **Total Classes:** 30  
+    **Model Used:** MobileNetV2  
+    **Input Size:** 128×128
     """)
 
-
-#Prediction Page
-elif(app_mode=="Disease Recognition"):
+# ------------------------------
+# Prediction Page
+# ------------------------------
+elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
     test_image = st.file_uploader("Choose an image:")
-    if(st.button("Show Image")):
-        st.image(test_image,use_container_width=True)
-    #Predict Button
-    if(st.button("Detect")):
-        with st.spinner("Processing.."):
-          st.write("Detected Disease:")
-          result_index = model_prediction(test_image)
-          #Define Class
-          class_name = [
-                    'HEALTHY RICE',
-                    'RICE BACTERIAL BLIGHT',
-                    'RICE BROWN SPOT',
-                    'RICE LEAF SMUT',
-                    'HEALTHY WHEAT',
-                    'WHEAT LOOSE SMUT',
-                    'WHEAT YELLOW RUST',
-                    'WHEAT BROWN RUST',
-                    'HEALTHY MILLET',
-                    'MILLET RUST',
-                    'MILLET BLAST',
-                    'HEALTHY SUGARCANE',
-                    'SUGARCANE YELLOW',
-                    'SUGARCANE RED ROT',
-                    'SUGARCANE RUST',
-                    'HEALTHY TEA LEAF',
-                    'TEA GREEN MIRID BUG',
-                    'TEA GRAY BLIGHT',
-                    'TEA HELOPELITIS',
-                    'HEALTHY POTATO',
-                    'POTATO EARLY BLIGHT',
-                    'POTATO LATE BLIGHT',
-                    'HEALTHY TOMATO',
-                    'TOMATO LEAF MOLD',
-                    'TOMATO MOSAIC VIRUS',
-                    'TOMATO SEPTORIA LEAF SPOT',
-                    'HEALTHY RICE',
-                    'HEALTHY SUGARCANE',
-                    'HEALTHY TEA LEAF',
-                    'HEALTHY WHEAT',
-                ]
 
-        st.success(format(class_name[result_index]))
+    if st.button("Show Image") and test_image:
+        st.image(test_image, use_container_width=True)
 
+    if st.button("Detect") and test_image:
+        with st.spinner("Processing..."):
+            result_index, confidence = model_prediction(test_image)
 
+            class_name = [
+                'HEALTHY RICE',
+                'RICE BACTERIAL BLIGHT',
+                'RICE BROWN SPOT',
+                'RICE LEAF SMUT',
+                'HEALTHY WHEAT',
+                'WHEAT LOOSE SMUT',
+                'WHEAT YELLOW RUST',
+                'WHEAT BROWN RUST',
+                'HEALTHY MILLET',
+                'MILLET RUST',
+                'MILLET BLAST',
+                'HEALTHY SUGARCANE',
+                'SUGARCANE YELLOW',
+                'SUGARCANE RED ROT',
+                'SUGARCANE RUST',
+                'HEALTHY TEA LEAF',
+                'TEA GREEN MIRID BUG',
+                'TEA GRAY BLIGHT',
+                'TEA HELOPELITIS',
+                'HEALTHY POTATO',
+                'POTATO EARLY BLIGHT',
+                'POTATO LATE BLIGHT',
+                'HEALTHY TOMATO',
+                'TOMATO LEAF MOLD',
+                'TOMATO MOSAIC VIRUS',
+                'TOMATO SEPTORIA LEAF SPOT',
+                'HEALTHY RICE',
+                'HEALTHY SUGARCANE',
+                'HEALTHY TEA LEAF',
+                'HEALTHY WHEAT',
+            ]
 
-
-
-
+            st.success(f"**Detected:** {class_name[result_index]} ({confidence:.2f}% confidence)")
 
 
