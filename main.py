@@ -6,7 +6,7 @@ from PIL import Image
 #Download the model from Hugging Face
 model_path = hf_hub_download(
     repo_id="qwertymaninwork/Plant_Disease_Detection_System",  # your repo name
-    filename="trained_model.keras"  # <-- change to your actual model file name
+    filename="mobilenetv2_plant.keras"  # <-- change to your actual model file name
 )
 #Load the TensorFlow model
 model = tf.keras.models.load_model(model_path, compile=False)
@@ -75,47 +75,41 @@ elif(app_mode=="Disease Recognition"):
           st.write("Detected Disease:")
           result_index = model_prediction(test_image)
           #Define Class
-          class_name = ['Apple___Apple_scab',
- 'Apple___Black_rot',
- 'Apple___Cedar_apple_rust',
- 'Apple___healthy',
- 'Background_without_leaves',
- 'Blueberry___healthy',
- 'Cherry___Powdery_mildew',
- 'Cherry___healthy',
- 'Corn___Cercospora_leaf_spot Gray_leaf_spot',
- 'Corn___Common_rust',
- 'Corn___Northern_Leaf_Blight',
- 'Corn___healthy',
- 'Grape___Black_rot',
- 'Grape___Esca_(Black_Measles)',
- 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
- 'Grape___healthy',
- 'Orange___Haunglongbing_(Citrus_greening)',
- 'Peach___Bacterial_spot',
- 'Peach___healthy',
- 'Pepper,_bell___Bacterial_spot',
- 'Pepper,_bell___healthy',
- 'Potato___Early_blight',
- 'Potato___Late_blight',
- 'Potato___healthy',
- 'Raspberry___healthy',
- 'Soybean___healthy',
- 'Squash___Powdery_mildew',
- 'Strawberry___Leaf_scorch',
- 'Strawberry___healthy',
- 'Tomato___Bacterial_spot',
- 'Tomato___Early_blight',
- 'Tomato___Late_blight',
- 'Tomato___Leaf_Mold',
- 'Tomato___Septoria_leaf_spot',
- 'Tomato___Spider_mites Two-spotted_spider_mite',
- 'Tomato___Target_Spot',
- 'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
- 'Tomato___Tomato_mosaic_virus',
- 'Tomato___healthy']
+          class_name = [
+                    'HEALTHY RICE',
+                    'RICE BACTERIAL BLIGHT',
+                    'RICE BROWN SPOT',
+                    'RICE LEAF SMUT',
+                    'HEALTHY WHEAT',
+                    'WHEAT LOOSE SMUT',
+                    'WHEAT YELLOW RUST',
+                    'WHEAT BROWN RUST',
+                    'HEALTHY MILLET',
+                    'MILLET RUST',
+                    'MILLET BLAST',
+                    'HEALTHY SUGARCANE',
+                    'SUGARCANE YELLOW',
+                    'SUGARCANE RED ROT',
+                    'SUGARCANE RUST',
+                    'HEALTHY TEA LEAF',
+                    'TEA GREEN MIRID BUG',
+                    'TEA GRAY BLIGHT',
+                    'TEA HELOPELITIS',
+                    'HEALTHY POTATO',
+                    'POTATO EARLY BLIGHT',
+                    'POTATO LATE BLIGHT',
+                    'HEALTHY TOMATO',
+                    'TOMATO LEAF MOLD',
+                    'TOMATO MOSAIC VIRUS',
+                    'TOMATO SEPTORIA LEAF SPOT',
+                    'HEALTHY RICE',
+                    'HEALTHY SUGARCANE',
+                    'HEALTHY TEA LEAF',
+                    'HEALTHY WHEAT',
+                ]
 
         st.success(format(class_name[result_index]))
+
 
 
 
