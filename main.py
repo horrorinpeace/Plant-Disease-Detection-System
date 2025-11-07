@@ -17,9 +17,6 @@ model = tf.keras.models.load_model(model_path, compile=False, safe_mode=False)
 
 
 # ------------------------------
-# Load saved weights
-# ------------------------------
-model.load_weights(model_path)
 
 # ------------------------------
 # TensorFlow Model Prediction
@@ -126,6 +123,7 @@ elif app_mode == "Disease Recognition":
             ]
 
             st.success(f"**Detected:** {class_name[result_index]} ({confidence:.2f}% confidence)")
+
 
 
 
